@@ -94,4 +94,27 @@ async function deleteProduct(productId) {
   }
 }
 
-export { addJsonData, getProducts, newProduct, updateProduct, deleteProduct};
+const patchProducts = async(product)=>{
+  const products = getProducts();
+  const productIndex = products.findIndex((p) => p.id === productId);
+
+  if (productIndex !== -1) {
+    products[productIndex] = { ...products[productIndex], ...product };
+
+    try {
+      await fsPromises.writeFile(
+        path.join("productsData.json"),
+        JSON.stringify(products),
+        { encoding: "utf8" }
+      );
+
+      return products[productIndex];
+    } catch (error) {
+      console.error(`Error writing to file: ${error.message}`);
+    }
+  }
+
+  return null;
+}
+
+export { addJsonData, getProducts, newProduct, updateProduct, deleteProduct,patchProducts};

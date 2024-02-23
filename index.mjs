@@ -1,8 +1,15 @@
-import express from "express"
+import express from "express";
 const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(express.json());
-import { addJsonData, getProducts, newProduct , updateProduct, deleteProduct} from "./json/json.js";
+import {
+  addJsonData,
+  getProducts,
+  newProduct,
+  updateProduct,
+  deleteProduct,
+  patchProducts,
+} from "./json/json.js";
 // GET method
 app.get("/products", async (req, res) => {
   const items = await getProducts();
@@ -40,6 +47,24 @@ app.put("/products/:id", async (req, res) => {
     res.status(500).send("Internal Server Error").end();
   }
 });
+
+// PATCH method
+app.patch("/products/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const patchedProduct = req.body;
+    const result = await updateProduct(productId, patchedProduct);
+
+    if (result) {
+      res.status(200).json(result).end();
+    } else {
+      res.status(404).send("Product not found").end();
+    }
+  } catch (error) {
+    res.status(500).send("Internal Server Error").end();
+  }
+});
+
 // DELETE method
 app.delete("/products/:id", async (req, res) => {
   try {
